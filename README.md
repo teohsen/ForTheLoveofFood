@@ -5,7 +5,6 @@
 [![Work in Progress](https://img.shields.io/badge/WORK_IN_PROGRESS-ITS_A_GO-GREEN.svg)](https://shields.io/)
 ---
 ### Social Media
-Cick me!
 
 [![Instagram](https://img.shields.io/badge/Instagram-E4405F?style=for-the-badge&logo=instagram&logoColor=white)](https://www.instagram.com/mimir.hygge/)
 
