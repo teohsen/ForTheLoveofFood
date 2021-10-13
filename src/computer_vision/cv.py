@@ -125,10 +125,25 @@ def image_shape(image):
     return image.shape
 
 
+def draw_yolobox(img, coord_one, coord_2, text, confidence, color=(0, 255, 0), thickness=1):
+    cv2.rectangle(img, coord_one, coord_2, color=color, thickness=thickness)
+    cv2.putText(img,
+                org=tuple([x + 15 for x in list(coord_one)]),
+                fontFace=cv2.FONT_HERSHEY_SIMPLEX,
+                fontScale=0.6,
+                text=f"{text}: {confidence:.2f}",
+                color=(0, 0, 255),
+                thickness=2)
+    return img
+
+
 # Testing
-def main(output=False):
-    test_path = Path(random.choice(glob.glob(f"{_RAW_IMAGEPATH.as_posix()}/*")))
-    image = read_image(test_path.as_posix())
+def main(file_path=None, output=False, buffer=0):
+    if file_path is None:
+        test_path = Path(random.choice(glob.glob(f"{_RAW_IMAGEPATH.as_posix()}/*")))
+        image = read_image(test_path.as_posix())
+    else:
+        image = read_image(file_path)
     print(image_shape(image))
 
     image = resize_image(image, factor=3, restrict=True)
@@ -137,22 +152,22 @@ def main(output=False):
 
     response = predict(image_cropped)
     _object = 0
+    _validclass = ["bowl", "cup",
+                   "sandwich", "banana", "cake", "hot dog", "apple",
+                   "orange", "broccoli", "carrot", "pizza", "donut",
+                   "person"]
+
     for i in response.iterrows():
         xx = i[1]
         print(xx.class_name)
-        if xx.class_name not in ["bowl", "cup", "sandwich", "banana", "cake"]:
+        dim_one = (xx.x1 - buffer, xx.y1 - buffer)
+        dim_two = (xx.x2 + buffer, xx.y2 + buffer)
+
+        if xx.class_name not in _validclass:
             continue
-
-        cv2.rectangle(image_cropped, (xx.x1, xx.y1), (xx.x2, xx.y2), color=(0, 255, 0), thickness=1)
-        cv2.putText(image_cropped,
-                    org=(xx.x1 + 15, xx.y1+ 15),
-                    fontFace=cv2.FONT_HERSHEY_SIMPLEX,
-                    fontScale=0.5,
-                    text=f"{xx.class_name}: {xx.score : 2f}",
-                    color=(0, 0, 255),
-                    thickness=2)
-
-        _object += 1
+        else:
+            image_cropped = draw_yolobox(image_cropped, dim_one, dim_two, xx.class_name, xx.score)
+            _object += 1
 
     cv2.imshow("original", image)
     cv2.imshow("cropped_image", image_cropped)
@@ -162,9 +177,4 @@ def main(output=False):
     if _object > 0 and output:
         output_image(image_cropped)
     else:
-        pass
-
-
-if __name__ == "__main__":
-    main(output=True)
-
+        return image_cropped
