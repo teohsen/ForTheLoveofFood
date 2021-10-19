@@ -1,6 +1,11 @@
-data
+!data/labels
+data/processed
+data/raw
 .env
 *__pycache__*
 models
 .idea
 documents
+
+# Temporary ignore
+src/computer_vision/detect_food.py

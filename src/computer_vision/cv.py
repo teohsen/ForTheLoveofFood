@@ -76,9 +76,10 @@ def resize_instaimage(image, dim=(1080, 1080)):
 
 
 def output_image(image,
-                 image_name=datetime.now(_TZ).__format__("%Y%m%d_%H%M%S"),
+                 image_name=None,
                  output_path=_PROCESSED_IMAGEPATH, ext=".jpg"):
 
+    image_name = f"{image_name}_{datetime.now(_TZ).__format__('%Y%m%d_%H%M%S')}"
     image_name = Path(image_name)
     if image_name.suffix == '':
         image_name = image_name.with_suffix(ext)
@@ -157,24 +158,34 @@ def main(file_path=None, output=False, buffer=0):
                    "orange", "broccoli", "carrot", "pizza", "donut",
                    "person"]
 
+    _area = 0
+    # TODO: Refactor for list comprehension, func to take max-area detected object
     for i in response.iterrows():
         xx = i[1]
         print(xx.class_name)
-        dim_one = (xx.x1 - buffer, xx.y1 - buffer)
-        dim_two = (xx.x2 + buffer, xx.y2 + buffer)
-
+        # xx.w, xx.h
+        area = (xx.w * xx.h)
         if xx.class_name not in _validclass:
             continue
+        elif area <= _area:
+            continue
         else:
-            image_cropped = draw_yolobox(image_cropped, dim_one, dim_two, xx.class_name, xx.score)
+            dim_one = (xx.x1 - buffer, xx.y1 - buffer)
+            dim_two = (xx.x2 + buffer, xx.y2 + buffer)
+            _area = area
             _object += 1
 
+    image_cropped = draw_yolobox(image_cropped, dim_one, dim_two, xx.class_name, xx.score)
     cv2.imshow("original", image)
-    cv2.imshow("cropped_image", image_cropped)
+    cv2.imshow("drawn_image", image_cropped)
+    print(dim_one, dim_two)
+    cv2.imshow("cropped_image", image[dim_one[1]:dim_two[1],dim_one[0]:dim_two[0]])
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
     if _object > 0 and output:
-        output_image(image_cropped)
+        # TODO: "pretty" this part
+        output_image(image_cropped, image_name="boundedbox")
+        output_image(image[dim_one[1]:dim_two[1], dim_one[0]:dim_two[0]], image_name="cropped")
     else:
         return image_cropped
