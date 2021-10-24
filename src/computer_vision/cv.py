@@ -121,6 +121,22 @@ def crop_image(image, factor, pad=False):
         return image
 
 
+# Image Enhancement
+def apply_clahe(image, clip=2.0, kernel=8):
+    clahe = cv2.createCLAHE(clipLimit=clip, tileGridSize=(kernel, kernel))
+    image = clahe.apply(image)
+
+    return image
+
+
+def apply_equalized_col(image):
+    r, g, b = cv2.split(image)
+    _ = [cv2.equalizeHist(x) for x in [r, g, b]]
+
+    image = cv2.merge(tuple(_))
+    return image
+
+
 # Image Info
 def image_shape(image):
     return image.shape
@@ -176,10 +192,13 @@ def main(file_path=None, output=False, buffer=0):
             _object += 1
 
     image_cropped = draw_yolobox(image_cropped, dim_one, dim_two, xx.class_name, xx.score)
+    _cropped_image = image[dim_one[1]:dim_two[1],dim_one[0]:dim_two[0]]
+    _clahed = apply_equalized_col(_cropped_image)
     cv2.imshow("original", image)
     cv2.imshow("drawn_image", image_cropped)
     print(dim_one, dim_two)
-    cv2.imshow("cropped_image", image[dim_one[1]:dim_two[1],dim_one[0]:dim_two[0]])
+    cv2.imshow("cropped_image", _cropped_image)
+    cv2.imshow("Colour_equalized", _clahed)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
