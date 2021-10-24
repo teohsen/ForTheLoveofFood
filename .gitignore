@@ -1,4 +1,5 @@
 !data/labels
+data/labels/*/*.jpg
 data/processed
 data/raw
 .env
