@@ -18,6 +18,8 @@ _RAW_IMAGEPATH = Path(py_.get(_CONFIG, "raw_image_path"))
 _PROCESSED_IMAGEPATH = Path(py_.get(_CONFIG, "processed_image_path"))
 _TZ = pytz.timezone(py_.get(_CONFIG, "timezone"))
 
+# TODO : Bring in YOlov4 custom - Sushi detector
+
 
 def read_image(file_path):
     img = cv2.imread(file_path)

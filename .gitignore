@@ -8,5 +8,8 @@ models
 .idea
 documents
 
+# Weights in models
+models/*/*.weights
+
 # Temporary ignore
 src/computer_vision/detect_food.py
