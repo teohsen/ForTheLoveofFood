@@ -2,6 +2,7 @@
 data/labels/*/*.jpg
 data/processed
 data/raw
+data/test
 .env
 *__pycache__*
 models
