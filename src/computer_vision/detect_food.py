@@ -8,6 +8,7 @@ _CUSTOM_WEIGHTS = Path(_CONFIG.get("shibasushi_weights"))
 _CUSTOM_CONFIG = Path(_CONFIG.get("shibasushi_cfg"))
 _CUSTOM_CLASSES = _CONFIG.get("shibasushi_class")
 _DIM = int(_CONFIG.get("shibasushi_dim"))
+_TESTOUT = _CONFIG.get("cv_output")
 
 
 class YoloV4Custom:
@@ -46,25 +47,18 @@ class YoloV4Custom:
 
         for i in range(len(classes)):
             _class = int(classes[i])
-            _label = self.class_list[_class]
+            _label = self.class_list[_class].upper()
             _confidence = confidence[i]
             label_text = f"{_label} - {_confidence:.2f}"
             x, y, w, h = boxes[i]
             print(label_text, x, y, h, w)
-            cv2.rectangle(image, (x, y), (x + w, y + h), color=(0, 255, 0), thickness=2)
-            cv2.putText(image, label_text, (x, y - 5), cv2.FONT_HERSHEY_SIMPLEX, fontScale=2, thickness=2,
-                        color=(255, 255, 0))
+            cv2.rectangle(image, (x, y), (x + w, y + h), color=(0, 255, 0), thickness=4)
+            if y >= 50:
+                cv2.putText(image, label_text, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, fontScale=3, thickness=7,
+                            color=(255, 255, 0))
+            else:
+                cv2.putText(image, label_text, (x, y + 100), cv2.FONT_HERSHEY_SIMPLEX, fontScale=3, thickness=7,
+                            color=(255, 255, 0))
 
         return image
 
-
-
-## Unit Test
-# image = cv2.imread(_CONFIG.get('shibasushi_test'))
-# shibasushi = YoloV4Custom(_CUSTOM_WEIGHTS.as_posix(), _CUSTOM_CONFIG.as_posix(), _CUSTOM_CLASSES)
-# classes, confi, bbox = shibasushi.predict(image)
-# output_image = shibasushi.draw(image, classes, confi, bbox)
-# cv2.imshow("image", image)
-# cv2.imshow("output_image", output_image)
-# cv2.waitKey(0)
-# cv2.destroyAllWindows()

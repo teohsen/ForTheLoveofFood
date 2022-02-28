@@ -7,7 +7,8 @@ imutils==0.5.4
 tensorflow==2.6.0
 scikit-learn==1.0
 
-
+# Scrapper
+beautifulsoup4==4.10.0
 
 # Frames
 numpy==1.21.2
