@@ -8,7 +8,7 @@ data/test
 models
 .idea
 documents
-
+leetcode
 # Weights in models
 models/*/*.weights
 
