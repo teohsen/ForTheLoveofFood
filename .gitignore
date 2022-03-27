@@ -11,6 +11,7 @@ documents
 leetcode
 # Weights in models
 models/*/*.weights
-
+*.jpg
+data/kaggle_datasets/*
 # Temporary ignore
 src/computer_vision/detect_food.py
