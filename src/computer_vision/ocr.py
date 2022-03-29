@@ -74,6 +74,13 @@ contours, hierarchy = cv2.findContours(thresh_it, cv2.RETR_EXTERNAL, cv2.CHAIN_A
 contours = sorted(contours, key=cv2.contourArea, reverse=True)[:5]
 
 
+# Alternate
+# thresh_it = cv2.adaptiveThreshold(image_drawn, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY_INV, 15, 7)
+# kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3))
+# dilated = cv2.dilate(thresh_it, kernel)
+# contours, hierarchy = cv2.findContours(dilated.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+
 if len(contours) != 0:
     # draw in blue the contours that were founded
     cv2.drawContours(output, contours, -1, (0,0,255), 1)

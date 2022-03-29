@@ -4,6 +4,7 @@ import random
 import glob
 import pytz
 from copy import deepcopy
+import math
 
 import pydash as py_
 import cv2
@@ -137,6 +138,40 @@ def apply_equalized_col(image):
 
     image = cv2.merge(tuple(_))
     return image
+
+
+def gamma_correction(image):
+    mid = 0.5
+
+    # convert img to HSV
+    hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+    hue, sat, val = cv2.split(hsv)
+    mean = np.mean(val)
+    gamma = math.log(mid * 255) / math.log(mean)  # compute gamma = log(mid*255)/log(mean)
+    val_gamma = np.power(val, gamma).clip(0, 255).astype(np.uint8)
+    hsv_gamma = cv2.merge([hue, sat, val_gamma])
+    return cv2.cvtColor(hsv_gamma, cv2.COLOR_HSV2BGR)
+
+
+# Adapt Canny
+def canny_adapt(image, dilate=False):
+    sigma = 0.33
+    ksize = 3
+    iter = 1
+
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    gray = cv2.medianBlur(gray, ksize=ksize)
+    v = np.median(gray)
+    lower = int(max(0, (1.0 - sigma) * v))
+    upper = int(min(255, (1.0 + sigma) * v))
+    edges = cv2.Canny(gray, lower, upper)
+
+    if dilate:
+        kernel = np.ones((ksize, ksize), np.uint8)
+        mask = cv2.dilate(edges, kernel, iterations=iter);
+
+    return mask
+
 
 
 # Image Info
